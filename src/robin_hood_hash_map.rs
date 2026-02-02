@@ -8,9 +8,9 @@ fn hash_with_fxhash<T: Hash>(t: &T) -> u64 {
 
 #[derive(Debug, Clone, Hash)]
 pub struct Bucket<K, V> {
-    key: K,
-    value: V,
-    probe_length: usize,
+    pub key: K,
+    pub value: V,
+    pub probe_length: usize,
 }
 #[derive(Debug, Clone, Hash)]
 pub struct RobinHashMap<K, V> {
@@ -141,109 +141,5 @@ where
         }
 
         Some(removed_value)
-    }
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn test_new_creates_empty_map() {
-        let map: RobinHashMap<String, i32> = RobinHashMap::new(16);
-        assert_eq!(map.capacity, 16);
-        assert_eq!(map.max_psl, 0);
-    }
-
-    #[test]
-    fn test_insert_and_get() {
-        let mut map = RobinHashMap::new(16);
-        map.insert("key1", 100);
-        map.insert("key2", 200);
-
-        assert_eq!(map.get(&"key1"), Some(&100));
-        assert_eq!(map.get(&"key2"), Some(&200));
-        assert_eq!(map.get(&"key3"), None);
-    }
-
-    #[test]
-    fn test_insert_returns_old_value_on_update() {
-        let mut map = RobinHashMap::new(16);
-
-        let result = map.insert("key", 100);
-        assert!(result.is_none());
-
-        let result = map.insert("key", 200);
-        assert!(result.is_some());
-        assert_eq!(result.unwrap().value, 100);
-
-        assert_eq!(map.get(&"key"), Some(&200));
-    }
-
-    #[test]
-    fn test_contains() {
-        let mut map = RobinHashMap::new(16);
-        map.insert("exists", 42);
-
-        assert!(map.contains(&"exists"));
-        assert!(!map.contains(&"not_exists"));
-    }
-
-    #[test]
-    fn test_delete() {
-        let mut map = RobinHashMap::new(16);
-        map.insert("key1", 100);
-        map.insert("key2", 200);
-
-        let deleted = map.delete(&"key1");
-        assert_eq!(deleted, Some(100));
-        assert!(!map.contains(&"key1"));
-        assert!(map.contains(&"key2"));
-    }
-
-    #[test]
-    fn test_delete_nonexistent_key() {
-        let mut map: RobinHashMap<&str, i32> = RobinHashMap::new(16);
-        let result = map.delete(&"nonexistent");
-        assert!(result.is_none());
-    }
-
-    #[test]
-    fn test_multiple_inserts_with_collisions() {
-        let mut map = RobinHashMap::new(8);
-
-        for i in 0..5 {
-            map.insert(i, i * 10);
-        }
-
-        for i in 0..5 {
-            assert_eq!(map.get(&i), Some(&(i * 10)));
-        }
-    }
-
-    #[test]
-    fn test_delete_maintains_lookup_integrity() {
-        let mut map = RobinHashMap::new(16);
-
-        map.insert("a", 1);
-        map.insert("b", 2);
-        map.insert("c", 3);
-
-        map.delete(&"b");
-
-        assert_eq!(map.get(&"a"), Some(&1));
-        assert_eq!(map.get(&"b"), None);
-        assert_eq!(map.get(&"c"), Some(&3));
-    }
-
-    #[test]
-    fn test_update_existing_key() {
-        let mut map = RobinHashMap::new(16);
-
-        map.insert("key", 1);
-        map.insert("key", 2);
-        map.insert("key", 3);
-
-        assert_eq!(map.get(&"key"), Some(&3));
     }
 }

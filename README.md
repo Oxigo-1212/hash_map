@@ -131,14 +131,8 @@ fn main() {
 ```
 src/
 ├── lib.rs                  # Library exports
-├── robin_hood_hash_map.rs  # Robin Hood implementation + 9 tests
-└── basic_hash_map.rs       # Basic open addressing + 19 tests
-```
-
-## Running Tests
-
-```bash
-cargo test
+├── robin_hood_hash_map.rs  # Robin Hood implementation 
+└── basic_hash_map.rs       # Basic open addressing 
 ```
 
 ## References

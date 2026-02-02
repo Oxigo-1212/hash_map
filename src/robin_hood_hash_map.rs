@@ -8,9 +8,9 @@ fn hash_with_fxhash<T: Hash>(t: &T) -> u64 {
 
 #[derive(Debug, Clone, Hash)]
 pub struct Bucket<K, V> {
-    pub key: K,
-    pub value: V,
-    pub probe_length: usize,
+    key: K,
+    value: V,
+    probe_length: usize,
 }
 #[derive(Debug, Clone, Hash)]
 pub struct RobinHashMap<K, V> {

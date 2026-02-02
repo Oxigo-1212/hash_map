@@ -1,9 +1,10 @@
 use std::hash::{DefaultHasher, Hash, Hasher};
-/* Hash properties
-- Array to store data
-- A hash function to compute the index
-- A collision resolution strategy
-*/
+fn hash<K: Hash>(k: &K, modulus: u64) -> u64 {
+    let mut hash_function = DefaultHasher::new();
+    k.hash(&mut hash_function);
+    let result = hash_function.finish();
+    result % modulus
+}
 #[derive(Debug, Hash, Clone)]
 pub enum Slot<K, V> {
     Empty,
@@ -29,14 +30,8 @@ where
         }
         OpenHashMap { array, capacity }
     }
-    pub fn hash(k: &K, modulus: u64) -> u64 {
-        let mut hash_function = DefaultHasher::new();
-        k.hash(&mut hash_function);
-        let result = hash_function.finish();
-        result % modulus
-    }
     pub fn insert(&mut self, key: K, value: V) -> bool {
-        let mut index = Self::hash(&key, self.capacity as u64) as usize;
+        let mut index = hash(&key, self.capacity as u64) as usize;
         let start_index = index;
         loop {
             match &self.array[index] {
@@ -58,13 +53,13 @@ where
         }
     }
     pub fn delete(&mut self, key: K) -> Slot<K, V> {
-        let index = Self::hash(&key, self.capacity as u64) as usize;
+        let index = hash(&key, self.capacity as u64) as usize;
         let delete_value = self.array[index].clone();
         self.array[index] = Slot::Deleted;
         delete_value
     }
     pub fn find(&self, key: K) -> Slot<&K, &V> {
-        let mut index = Self::hash(&key, self.capacity as u64) as usize;
+        let mut index = hash(&key, self.capacity as u64) as usize;
         loop {
             match &self.array[index] {
                 Slot::Some((k, v)) => {

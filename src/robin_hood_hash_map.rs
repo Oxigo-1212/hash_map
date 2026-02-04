@@ -24,11 +24,8 @@ where
     V: Eq + Clone,
 {
     pub fn new(capacity: usize) -> Self {
-        let mut array = Vec::with_capacity(capacity);
+        let array = vec![None; capacity];
         let max_psl = 0;
-        for _ in 0..capacity {
-            array.push(None);
-        }
         RobinHashMap {
             array,
             max_psl,
